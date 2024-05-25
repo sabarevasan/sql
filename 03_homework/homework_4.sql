@@ -107,6 +107,24 @@ HINT: There are a possibly a few ways to do this query, but if you're struggling
 3) Query the second temp table twice, once for the best day, once for the worst day, 
 with a UNION binding them. */
 
+WITH RankedCost AS (
+  SELECT market_date, cost,
+         RANK() OVER (PARTITION BY cost ORDER BY cost ASC) AS CostRank
+  FROM (SELECT market_date, SUM(quantity*cost_to_customer_per_qty) AS cost FROM customer_purchases GROUP BY market_date)
+)
+SELECT rc.market_date, rc.cost
+FROM RankedCost rc
+WHERE rc.cost = (
+  SELECT MAX(cost)
+  FROM RankedCost
+)
+UNION ALL
+SELECT rc.market_date, rc.cost
+FROM RankedCost rc
+WHERE rc.cost = (
+  SELECT MIN(cost)
+  FROM RankedCost
+);
 
 
 
