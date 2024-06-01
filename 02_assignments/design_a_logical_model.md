@@ -5,8 +5,12 @@ Create a logical model for a small bookstore. 📚
 
 At the minimum it should have employee, order, sales, customer, and book entities (tables). Determine sensible column and table design based on what you know about these concepts. Keep it simple, but work out sensible relationships to keep tables reasonably sized. Include a date table. There are several tools online you can use, I'd recommend [_Draw.io_](https://www.drawio.com/) or [_LucidChart_](https://www.lucidchart.com/pages/).
 
+![alt text](Bookstore-ERD-1.png)
+
 ## Question 2
 We want to create employee shifts, splitting up the day into morning and evening. Add this to the ERD.
+
+![alt text](Bookstore-ERD-2.png)
 
 ## Question 3
 The store wants to keep customer addresses. Propose two architectures for the CUSTOMER_ADDRESS table, one that will retain changes, and another that will overwrite. Which is type 1, which is type 2?
@@ -14,8 +18,20 @@ The store wants to keep customer addresses. Propose two architectures for the CU
 _Hint, search type 1 vs type 2 slowly changing dimensions._
 
 Bonus: Are there privacy implications to this, why or why not?
+
+
 ```
-Your answer...
+Bookstore ERD from 1 & 2 show the relationship of one address per customer.
+
+If we were to improve the relational-data model to include multiple addresses per customer, it could be based on the type of address (mailing, billing etc). This will require an addtional column called `AddressType` in the `Address` table.
+  
+Further, to retain address changes, address table could use a `EffectiveDate` column. The table record with the latest `EffectiveDate` will provide the current address of the customer.
+This is type 2.
+
+To neglect address history we could update the columns corresponding to customer address for the record referenced by the customerID and/or addressID. This is type 1.
+
+All personal data has privacy implications. I recall insurance, credit companies validating users by their address history. Maintaining sensitive customer information must adhere all local governing regulations and best practices, in that order.
+
 ```
 
 ## Question 4
@@ -23,7 +39,11 @@ Review the AdventureWorks Schema [here](https://i.stack.imgur.com/LMu4W.gif)
 
 Highlight at least two differences between it and your ERD. Would you change anything in yours?
 ```
-Your answer...
+Differences:
+1. Both `Employee` and `Customer` are inherited from the `Person` model, thus making any regulatory updates to sensitive data more managable
+2. There is a table for `CreditCard` where the columns seem to have data in plain text
+
+AdventureWorks schema will enable many additional functionalities, so much of it is an improvement over the ERD. Yet, I prefer to avoid storing card details, and make an effort to encrypt all sensitive data.
 ```
 
 # Criteria
